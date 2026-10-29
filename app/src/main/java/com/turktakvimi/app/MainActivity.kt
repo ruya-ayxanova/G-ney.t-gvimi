@@ -1,5 +1,5 @@
 package com.turktakvimi.app
-
+import android.content.Intent
 import android.app.Activity
 import android.os.Bundle
 import android.graphics.Typeface
@@ -65,7 +65,16 @@ class MainActivity : Activity() {
             true
         )
         root.addView(title)
-
+val settingsButton = Button(this).apply {
+    text = "تنظیمات"
+    setOnClickListener {
+        startActivityForResult(
+            Intent(this@MainActivity, SettingsActivity::class.java),
+            1001
+        )
+    }
+}
+root.addView(settingsButton)
         monthTitle = textView("", 22f, true)
         root.addView(monthTitle)
 
