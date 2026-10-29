@@ -10,17 +10,32 @@ import android.widget.TextView
 
 class MainActivity : Activity() {
 
-    private val aylar = listOf(
-        "Ağlar Gülər", "Gülən Ay", "Qızaran Ay",
-        "Qura Bişirən", "Quyruq Doğan", "Zumar Ayı",
-        "Xəzəl Ayı", "Qırov Ayı", "Azər",
-        "Çillə", "Donduran Ay", "Bayram Ayı"
-    )
+    
+private val aylar = listOf(
+    "آغلار گولر",
+    "گولن آی",
+    "قیزاران آی",
+    "قورا بیشیرن",
+    "قویروق دوغان",
+    "زومار آیی",
+    "خەزەل آیی",
+    "قیروو آیی",
+    "آذر",
+    "چیله",
+    "دوندران آی",
+    "بایرام آیی"
+)
 
-    private val gunler = listOf(
-        "Yel-li Gün", "Süd Günü", "Duz Günü",
-        "Ara Gün", "Od Günü", "Su Günü", "Ayni Günü"
-    )
+private val gunler = listOf(
+    "یئل لی گون",
+    "سود گونو",
+    "دوز گونو",
+    "آرا گون",
+    "اود گونو",
+    "سو گونو",
+    "آینی گونو"
+)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
