@@ -5,83 +5,121 @@ import android.app.Activity
 import android.os.Bundle
 import android.graphics.Color
 import android.view.Gravity
+import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 
 class MainActivity : Activity() {
 
-    
-private val aylar = listOf(
-    "آغلار گولر",
-    "گولن آی",
-    "قیزاران آی",
-    "قورا بیشیرن",
-    "قویروق دوغان",
-    "زومار آیی",
-    "خەزەل آیی",
-    "قیروو آیی",
-    "آذر",
-    "چیله",
-    "دوندران آی",
-    "بایرام آیی"
-)
+    private val aylar = listOf(
+        "آغلار گولر", "گولن آی", "قیزاران آی",
+        "قورا بیشیرن", "قویروق دوغان", "زومار آیی",
+        "خەزەل آیی", "قیروو آیی", "آذر",
+        "چیله", "دوندران آی", "بایرام آیی"
+    )
 
-private val gunler = listOf(
-    "یئل لی گون",
-    "سود گونو",
-    "دوز گونو",
-    "آرا گون",
-    "اود گونو",
-    "سو گونو",
-    "آینی گونو"
-)
+    private val gunler = listOf(
+        "یئل لی گون", "سود گونو", "دوز گونو",
+        "آرا گون", "اود گونو", "سو گونو", "آینی گونو"
+    )
 
+    private val renk = Color.rgb(38, 91, 66)
+    private lateinit var icerik: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val ekran = LinearLayout(this)
-        ekran.orientation = LinearLayout.VERTICAL
-        ekran.gravity = Gravity.CENTER
-        ekran.setPadding(24, 24, 24, 24)
-        ekran.setBackgroundColor(Color.rgb(247, 244, 232))
+        val ana = LinearLayout(this)
+        ana.orientation = LinearLayout.VERTICAL
+        ana.setBackgroundColor(Color.rgb(247, 244, 232))
 
-        val basliq = TextView(this)
-        basliq.text = "TÜRK TƏQVİMİ"
-        basliq.textSize = 28f
-        basliq.setTextColor(Color.rgb(35, 90, 65))
-        basliq.gravity = Gravity.CENTER
-        ekran.addView(basliq)
+        val baslik = TextView(this)
+        baslik.text = "تورک تقویمی"
+        baslik.textSize = 28f
+        baslik.gravity = Gravity.CENTER
+        baslik.setTextColor(renk)
+        baslik.setPadding(12, 24, 12, 24)
+        ana.addView(baslik)
 
-        val altBasliq = TextView(this)
-        altBasliq.text = "\nAylar"
-        altBasliq.textSize = 22f
-        altBasliq.setTextColor(Color.BLACK)
-        ekran.addView(altBasliq)
+        val dugmeler = LinearLayout(this)
+        dugmeler.orientation = LinearLayout.HORIZONTAL
+
+        val ayDugme = Button(this)
+        ayDugme.text = "آی‌لیق تقویم"
+        dugmeler.addView(
+            ayDugme,
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        val yilDugme = Button(this)
+        yilDugme.text = "تاریخی گونلر"
+        dugmeler.addView(
+            yilDugme,
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        ana.addView(dugmeler)
+
+        val kaydir = ScrollView(this)
+        icerik = LinearLayout(this)
+        icerik.orientation = LinearLayout.VERTICAL
+        icerik.setPadding(18, 12, 18, 24)
+        kaydir.addView(icerik)
+        ana.addView(
+            kaydir,
+            LinearLayout.LayoutParams(-1, 0, 1f)
+        )
+
+        ayDugme.setOnClickListener { aylariGoster() }
+        yilDugme.setOnClickListener { yilDonumleriniGoster() }
+
+        setContentView(ana)
+        aylariGoster()
+    }
+
+    private fun yazi(metin: String, boyut: Float = 18f) {
+        val tv = TextView(this)
+        tv.text = metin
+        tv.textSize = boyut
+        tv.setTextColor(Color.DKGRAY)
+        tv.setPadding(8, 10, 8, 10)
+        icerik.addView(tv)
+    }
+
+    private fun aylariGoster() {
+        icerik.removeAllViews()
+        yazi("آیلار", 23f)
 
         aylar.forEachIndexed { index, ay ->
-            val metin = TextView(this)
-            metin.text = "${index + 1}. $ay"
-            metin.textSize = 18f
-            metin.setTextColor(Color.DKGRAY)
-            metin.setPadding(8, 6, 8, 6)
-            ekran.addView(metin)
+            yazi("${index + 1}. $ay")
         }
 
-        val gunBasliq = TextView(this)
-        gunBasliq.text = "\nHəftənin günləri"
-        gunBasliq.textSize = 22f
-        gunBasliq.setTextColor(Color.BLACK)
-        ekran.addView(gunBasliq)
-
+        yazi("هفته‌نین گونلری", 23f)
         gunler.forEachIndexed { index, gun ->
-            val metin = TextView(this)
-            metin.text = "${index + 1}. $gun"
-            metin.textSize = 17f
-            metin.setTextColor(Color.DKGRAY)
-            ekran.addView(metin)
+            yazi("${index + 1}. $gun")
         }
+    }
 
-        setContentView(ekran)
+    private fun yilDonumleriniGoster() {
+        icerik.removeAllViews()
+        yazi("تاریخی شخصیتلر", 23f)
+
+        yazi("محمد امین رسول زاده")
+        yazi("دوغوم: ۱۱ بهمن ۱۲۶۲")
+        yazi("اؤلوم: ۱۶ اسفند ۱۳۳۳")
+
+        yazi("مصطفی کمال آتاتورک")
+        yazi("دوغوم گونو: ۱۹ مئی ۱۸۸۱")
+        yazi("اؤلوم: ۱۰ نوامبر ۱۹۳۸")
+
+        yazi("ابوالفضل ائلچی‌بی")
+        yazi("دوغوم: ۳ تیر ۱۳۱۷")
+        yazi("اؤلوم: ۱ شهریور ۱۳۷۹")
+
+        yazi("تاریخی و فرهنگی بایرام‌لار", 23f)
+        yazi("نوروز بایرامی")
+        yazi("چیلله گئجه‌سی")
+        yazi("۲۱ آذر — میلّی حکومتین یاد گونو")
     }
 }
