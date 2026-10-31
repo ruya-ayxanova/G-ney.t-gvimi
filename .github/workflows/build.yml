@@ -7,6 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fix resource folder names
+        run: |
+          cd app/src/main/res
+          for d in mipmap_*; do
+            [ -d "$d" ] && mv "$d" "${d/mipmap_/mipmap-}"
+          done
+          ls
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
