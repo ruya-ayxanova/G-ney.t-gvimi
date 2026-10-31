@@ -24,4 +24,7 @@
         </activity>
 
     </application>
+    <receiver
+    android:name=".EventReminderReceiver"
+    android:exported="false" />
 </manifest>
