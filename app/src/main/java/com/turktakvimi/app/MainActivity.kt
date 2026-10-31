@@ -10,7 +10,17 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 
-class MainActivity : Activity() {
+class MainActivity : Activity() {override fun onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == 1001 && resultCode == RESULT_OK) {
+        recreate()
+    }
+}
 
     private val months = listOf(
         "آغلار گولر",
