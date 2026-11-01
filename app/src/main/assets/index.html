@@ -87,9 +87,10 @@ const fa=s=>String(s).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
 const pf=new Intl.DateTimeFormat("en-u-ca-persian-nu-latn",{year:"numeric",month:"numeric",day:"numeric"});
 const hf=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"numeric",day:"numeric"});
 const pr=(f,d)=>{const o={};f.formatToParts(d).forEach(p=>{o[p.type]=parseInt(p.value,10)});return o};
-let st={cu:{},off:0,sh:1,sg:1};
+let st={cu:{},off:0,sh:1,sg:1,th:"auto",nt:0,nh:"08:00"};
 try{const x=localStorage.getItem("tt");if(x)st=Object.assign(st,JSON.parse(x))}catch(e){}
 const save=()=>{try{localStorage.setItem("tt",JSON.stringify(st))}catch(e){}};
+const applyTheme=()=>{const r=document.documentElement;if(st.th=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",st.th)};applyTheme();
 const noon=(y,m,d)=>new Date(y,m,d,12);
 const P=g=>pr(pf,g), H=g=>pr(hf,new Date(g.getTime()+st.off*864e5));
 const add=(g,n)=>new Date(g.getTime()+n*864e5);
@@ -118,7 +119,7 @@ function cal(){const n=mdays(S.y,S.m),s=mstart(S.y,S.m),off=(s.getDay()+1)%7;
  WD.forEach(w=>h+=`<div class="w">${w}</div>`);
  for(let i=0;i<off;i++)h+=`<div class="d e"></div>`;
  for(let i=1;i<=n;i++){const g=add(s,i-1);h+=`<button class="d${same(g,t0)?" td":""}${same(g,S.sel)?" sel":""}" data-i="${i-1}">${fa(i)}${dots(evFor(g))}</button>`}
- $("#m").innerHTML=h+"</div>"+dayCard();
+ $("#m").innerHTML=h+"</div>"+dayCard()+yearCard();
  $("#nx").onclick=()=>step(1);$("#pv").onclick=()=>step(-1);$("#pk").onclick=picker;
  document.querySelectorAll(".d[data-i]").forEach(b=>b.onclick=()=>{S.sel=add(s,+b.dataset.i);cal()})}
 function step(d){S.m+=d;if(S.m>12){S.m=1;S.y++}if(S.m<1){S.m=12;S.y--}cal()}
@@ -146,14 +147,40 @@ function setDate(id){const v=prompt("ay و گون (مثال: 5 12) — شمسی 
  st.cu[id]=a;save();evs()}
 function sets(){$("#m").innerHTML=`<div class="card"><h3>هجری تاریخ دوزلتمه‌سی</h3><div class="sub" style="margin-bottom:8px">دینی گونلر اؤلکه‌یه گؤره 1 گون فرقلی اولا بیلر</div>
  <select id="of">${[-2,-1,0,1,2].map(v=>`<option value="${v}" ${v==st.off?"selected":""}>${v>0?"+":""}${fa(v)}</option>`).join("")}</select></div>
- <div class="card"><h3>گؤستریلن تاریخلر</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="sg" style="width:auto" ${st.sg?"checked":""}> میلادی</label><label style="display:block;padding:6px 0"><input type="checkbox" id="sh" style="width:auto" ${st.sh?"checked":""}> قمری</label></div><div class="card"><button id="rs">اؤزل تاریخلری سیل</button></div>`;
+ <div class="card"><h3>گؤستریلن تاریخلر</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="sg" style="width:auto" ${st.sg?"checked":""}> میلادی</label><label style="display:block;padding:6px 0"><input type="checkbox" id="sh" style="width:auto" ${st.sh?"checked":""}> قمری</label></div><div class="card"><h3>گئجه مودی</h3><select id="th"><option value="auto">اوتوماتیک</option><option value="light">ایشیقلی</option><option value="dark">قارانلیق</option></select></div><div class="card"><h3>گونلوک بیلدیریش</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="nt" style="width:auto"> هر گون بیلدیریش</label><input type="time" id="nh"><div class="sub" id="ns" style="margin-top:6px"></div></div><div class="card"><button id="rs">اؤزل تاریخلری سیل</button></div>`;
+ $("#th").value=st.th;$("#nt").checked=!!st.nt;$("#nh").value=st.nh;$("#th").onchange=e=>{st.th=e.target.value;save();applyTheme()};$("#nt").onchange=e=>{st.nt=e.target.checked?1:0;save();notif(true)};$("#nh").onchange=e=>{st.nh=e.target.value||"08:00";save();notif(false)};if(!window.Native)$("#ns").textContent="بیلدیریش یالنیز اپلیکاسیادا ایشلیر";
  $("#of").onchange=e=>{st.off=+e.target.value;save()};$("#sg").onchange=e=>{st.sg=e.target.checked?1:0;save()};$("#sh").onchange=e=>{st.sh=e.target.checked?1:0;save()};
  $("#rs").onclick=()=>{st.cu={};save();alert("سیلیندی")}}
 function go(t){S.tab=t;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));({cal,ev:evs,set:sets})[t]()}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
 $("#today").onclick=()=>{S.y=tp.year;S.m=tp.month;S.sel=t0;go("cal")};
+function equinox(year){
+ const Y=(year-2000)/1000,r=Math.PI/180;
+ const J0=2451623.80984+365242.37404*Y+0.05169*Y*Y-0.00411*Y*Y*Y-0.00057*Y*Y*Y*Y;
+ const T=(J0-2451545)/36525,W=35999.373*T-2.47;
+ const dl=1+0.0334*Math.cos(W*r)+0.0007*Math.cos(2*W*r);
+ const A=[[485,324.96,1934.136],[203,337.23,32964.467],[199,342.08,20.186],[182,27.85,445267.112],[156,73.14,45036.886],[136,171.52,22518.443],[77,222.54,65928.934],[74,296.72,3034.906],[70,243.58,9037.513],[58,119.81,33718.147],[52,297.17,150.678],[50,21.02,2281.226],[45,247.54,29929.562],[44,325.15,31555.956],[29,60.93,4443.417],[18,155.12,67555.328],[17,288.79,4562.452],[16,198.04,62894.029],[14,199.76,31436.921],[12,95.39,14577.848],[12,287.11,31931.756],[12,320.81,34777.259],[9,227.73,1222.114],[8,15.45,16859.074]];
+ let S=0;A.forEach(a=>{S+=a[0]*Math.cos((a[1]+a[2]*T)*r)});
+ const J=J0+0.00001*S/dl-69/86400;
+ return Math.round((J-2440587.5)*864e5)}
+function yearCard(){const now=Date.now();let e=equinox(new Date().getFullYear());if(e<=now)e=equinox(new Date().getFullYear()+1);
+ const ms=e-now,d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),py=P(new Date()).year+1;
+ const o={day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"};
+ const tz=new Date(e).toLocaleString("az",Object.assign({timeZone:"Asia/Tehran"},o));
+ const lc=new Date(e).toLocaleString("az",o);
+ return `<div class="card"><h3>یئنی ایل ${fa(py)}</h3><div class="sub">${fa(d)} گون ${fa(h)} ساعت قالیب</div><div class="sub">تحویل (تهران): ${tz}</div><div class="sub">تحویل (محلی): ${lc}</div></div>`}
+function notif(ask){const N=window.Native,ns=$("#ns");
+ if(!N){if(ns)ns.textContent="بیلدیریش یالنیز اپلیکاسیادا ایشلیر";return}
+ if(!st.nt){N.schedule("[]");return}
+ if(ask)N.askPermission();
+ const hm=(st.nh||"08:00").split(":").map(Number),out=[];
+ for(let i=0;i<45;i++){const g=add(t0,i);const at=new Date(g.getFullYear(),g.getMonth(),g.getDate(),hm[0],hm[1],0).getTime();if(at<=Date.now())continue;
+  const p=P(g),l=evFor(g);
+  out.push({at:at,t:WD[(g.getDay()+1)%7]+" · "+AM[p.month-1]+" "+fa(p.day),x:l.length?l.map(e=>e.n+" — "+e.d).join("\n"):g.toLocaleDateString("az",{day:"numeric",month:"long",year:"numeric"})})}
+ N.schedule(JSON.stringify(out))}
 let sx=null;
 $("#m").addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 $("#m").addEventListener("touchend",e=>{if(sx===null||S.tab!="cal")return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>60)step(dx<0?1:-1)});
 cal();
+if(st.nt)notif(false);
 </script></body></html>
