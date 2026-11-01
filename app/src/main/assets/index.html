@@ -3,9 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>تورک تقویمی</title>
 <style>
-:root{--bg:#f6f4ef;--sf:#fff;--tx:#1d1d1b;--mu:#6b6a63;--bd:#e0ddd3;--ac:#2a7f62;--k1:#c0502f;--k2:#2a7f62;--k3:#3b6fb6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181a;--sf:#232427;--tx:#eceae4;--mu:#9a988f;--bd:#34353a;--ac:#5fc2a0;--k1:#e0806a;--k2:#5fc2a0;--k3:#7ba7e6}}
-:root[data-theme="dark"]{--bg:#17181a;--sf:#232427;--tx:#eceae4;--mu:#9a988f;--bd:#34353a;--ac:#5fc2a0;--k1:#e0806a;--k2:#5fc2a0;--k3:#7ba7e6}
+:root{--bg:#f6f4ef;--sf:#fff;--tx:#1d1d1b;--mu:#6b6a63;--bd:#e0ddd3;--ac:#2a7f62;--k1:#c0502f;--k2:#2a7f62;--k3:#3b6fb6;--k4:#8e5bb5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181a;--sf:#232427;--tx:#eceae4;--mu:#9a988f;--bd:#34353a;--ac:#5fc2a0;--k1:#e0806a;--k2:#5fc2a0;--k3:#7ba7e6;--k4:#b58ee0}}
+:root[data-theme="dark"]{--bg:#17181a;--sf:#232427;--tx:#eceae4;--mu:#9a988f;--bd:#34353a;--ac:#5fc2a0;--k1:#e0806a;--k2:#5fc2a0;--k3:#7ba7e6;--k4:#b58ee0}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--tx);font:16px/1.5 Tahoma,"Noto Naskh Arabic",system-ui,sans-serif;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
@@ -26,7 +26,7 @@ nav button.on{color:var(--ac);font-weight:700}
 .d.sel{background:var(--ac);color:#fff}
 .d i{display:flex;gap:2px;height:6px;margin-top:2px}
 .d i b{width:6px;height:6px;border-radius:50%}
-.k1{background:var(--k1)}.k2{background:var(--k2)}.k3{background:var(--k3)}
+.k1{background:var(--k1)}.k2{background:var(--k2)}.k3{background:var(--k3)}.k4{background:var(--k4)}
 .d.sel i b{outline:1px solid #fff}
 .card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-top:12px}
 .card h3{margin:0 0 2px;font-size:17px}
@@ -80,7 +80,19 @@ const EV=[
 {id:24,n:"میلاد پیامبر",t:"دینی",d:"مولود گونو",k:3,r:{h:[3,17]}},
 {id:25,n:"میلاد امام علی",t:"دینی",d:"۱۳ رجب",k:3,r:{h:[7,13]}},
 {id:26,n:"نیمه شعبان",t:"دینی",d:"۱۵ شعبان",k:3,r:{h:[8,15]}},
-{id:27,n:"آتا بابک",t:"تاریخی شخصیت",d:"دوغوم گونو",k:1,r:{s:[4,10]}}
+{id:27,n:"آتا بابک",t:"تاریخی شخصیت",d:"دوغوم گونو",k:1,r:{s:[4,10]}},
+{id:28,n:"یئنی ایل بایرامی",t:"آذربایجان رسمی بایرامی",d:"۱ و ۲ یانوار",k:4,r:{g:[1,1],to:[1,2]}},
+{id:29,n:"۲۰ یانوار",t:"آذربایجان رسمی بایرامی",d:"اومومخالق عزا گونو",k:4,r:{g:[1,20]}},
+{id:30,n:"۸ مارت",t:"آذربایجان رسمی بایرامی",d:"بئین‌المللی قادینلار گونو",k:4,r:{g:[3,8]}},
+{id:31,n:"نوروز تعطیلی",t:"آذربایجان رسمی بایرامی",d:"۲۰ دن ۲۴ مارتا قدر",k:4,r:{g:[3,20],to:[3,24]}},
+{id:32,n:"۹ مای",t:"آذربایجان رسمی بایرامی",d:"فاشیزم اوستونده قلبه گونو",k:4,r:{g:[5,9]}},
+{id:33,n:"۲۸ مای",t:"آذربایجان رسمی بایرامی",d:"جمهوریت گونو",k:4,r:{g:[5,28]}},
+{id:34,n:"۱۵ ایون",t:"آذربایجان رسمی بایرامی",d:"میلّی قورتولوش گونو",k:4,r:{g:[6,15]}},
+{id:35,n:"۲۶ ایون",t:"آذربایجان رسمی بایرامی",d:"سیلاحلی قووّه‌لر گونو",k:4,r:{g:[6,26]}},
+{id:36,n:"۲۷ سئنتیابر",t:"آذربایجان رسمی بایرامی",d:"آنیم گونو",k:4,r:{g:[9,27]}},
+{id:37,n:"۸ نویابر",t:"آذربایجان رسمی بایرامی",d:"زفر گونو",k:4,r:{g:[11,8]}},
+{id:38,n:"۹ نویابر",t:"آذربایجان رسمی بایرامی",d:"دؤولت بایراغی گونو",k:4,r:{g:[11,9]}},
+{id:39,n:"۳۱ دئکابر",t:"آذربایجان رسمی بایرامی",d:"دونیا آذربایجانلیلارینین همرأیلیک گونو",k:4,r:{g:[12,31]}}
 ];
 
 const fa=s=>String(s).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
@@ -102,6 +114,7 @@ function evFor(g){const p=P(g),h=H(g),gm=g.getMonth()+1,gd=g.getDate();
  return EV.filter(e=>{let r=e.r;const c=st.cu[e.id];if(c)r={s:c};if(!r)return false;
   if(r.s)return r.s[0]==p.month&&r.s[1]==p.day;
   if(r.h)return r.h[0]==h.month&&r.h[1]==h.day;
+  if(r.to){const v=gm*100+gd;return v>=r.g[0]*100+r.g[1]&&v<=r.to[0]*100+r.to[1]}
   return r.g[0]==gm&&r.g[1]==gd})}
 const t0=noon(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());
 let tp=P(t0);
@@ -148,7 +161,7 @@ function evs(){const q=S.q.trim();let up=[];
  for(let i=0;i<380;i++){const g=add(t0,i);evFor(g).forEach(e=>up.push({g,e}))}
  up=up.filter(x=>(!S.f||x.e.k==S.f)&&(!q||x.e.n.includes(q)));
  const pend=EV.filter(e=>!e.r&&!st.cu[e.id]&&(!S.f||e.k==S.f)&&(!q||e.n.includes(q)));
- const ch=[[0,"همه"],[1,"تاریخی"],[2,"فرهنگی"],[3,"دینی"]].map(c=>`<button data-f="${c[0]}" class="${S.f==c[0]?"on":""}">${c[1]}</button>`).join("");
+ const ch=[[0,"همه"],[1,"تاریخی"],[2,"فرهنگی"],[3,"دینی"],[4,"رسمی"]].map(c=>`<button data-f="${c[0]}" class="${S.f==c[0]?"on":""}">${c[1]}</button>`).join("");
  let h=`<input id="q" placeholder="آختار" value="${S.q}"><div class="chips">${ch}</div>`;
  h+=up.map(x=>{const p=P(x.g);return `<div class="card ev" style="margin-top:8px"><span class="dot k${x.e.k}"></span><div>${x.e.n}<div class="sub">${x.e.t} — ${x.e.d}</div><div class="sub">${lab(st.cm,x.g)}</div></div></div>`}).join("")||`<div class="sub">اولای تاپیلمادی</div>`;
  if(pend.length)h+=`<h2>تاریخ تعیین اولوناجاق</h2>`+pend.map(e=>`<div class="card ev" style="margin-top:8px"><span class="dot k${e.k}"></span><div>${e.n}<div class="sub">${e.t} — ${e.d}</div></div><button data-p="${e.id}">تاریخ تعیین ائت</button></div>`).join("");
