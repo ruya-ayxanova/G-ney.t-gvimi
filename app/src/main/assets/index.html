@@ -87,7 +87,7 @@ const fa=s=>String(s).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
 const pf=new Intl.DateTimeFormat("en-u-ca-persian-nu-latn",{year:"numeric",month:"numeric",day:"numeric"});
 const hf=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"numeric",day:"numeric"});
 const pr=(f,d)=>{const o={};f.formatToParts(d).forEach(p=>{o[p.type]=parseInt(p.value,10)});return o};
-let st={cu:{},off:0,sh:1,sg:1,th:"auto",nt:0,nh:"08:00"};
+let st={cu:{},off:0,sh:1,sg:1,ss:1,cm:"s",fs:1,th:"auto",nt:0,nh:"08:00"};
 try{const x=localStorage.getItem("tt");if(x)st=Object.assign(st,JSON.parse(x))}catch(e){}
 const save=()=>{try{localStorage.setItem("tt",JSON.stringify(st))}catch(e){}};
 const applyTheme=()=>{const r=document.documentElement;if(st.th=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",st.th)};applyTheme();
@@ -109,13 +109,26 @@ let S={y:tp.year,m:tp.month,sel:t0,tab:"cal",f:0,q:""};
 const $=s=>document.querySelector(s);
 const same=(a,b)=>a.toDateString()==b.toDateString();
 const dots=l=>"<i>"+[...new Set(l.map(e=>e.k))].map(k=>`<b class="k${k}"></b>`).join("")+"</i>";
-function dayCard(){const g=S.sel,p=P(g),h=H(g),l=evFor(g);
- const gs=g.toLocaleDateString("az",{day:"numeric",month:"long",year:"numeric"});
- return `<div class="card"><h3>${WD[(g.getDay()+1)%7]} · ${AM[p.month-1]} — ${fa(p.day)}</h3>
- <div class="sub">${[st.sg?gs:"",st.sh?fa(h.day)+" "+HM[h.month-1]+" "+fa(h.year):""].filter(Boolean).join(" · ")}</div>
+const GM=["یانوار","فئورال","مارت","آپرئل","مای","ایون","ایول","آوقوست","سئنتیابر","اوکتیابر","نویابر","دئکابر"];
+function hstart(y,m){const a=H(t0);let d=add(t0,Math.round(((y*12+m)-(a.year*12+a.month))*29.5306-(a.day-1)));
+ for(let i=0;i<20;i++){const h=H(d);if(h.year==y&&h.month==m&&h.day==1)return d;
+  const dl=((y*12+m)-(h.year*12+h.month))*29.5306+(1-h.day);d=add(d,Math.round(dl)||(dl>0?1:-1))}
+ return d}
+const CS={
+ s:{n:AM,start:mstart,days:mdays,of:P},
+ g:{n:GM,start:(y,m)=>noon(y,m-1,1),days:(y,m)=>new Date(y,m,0).getDate(),of:g=>({year:g.getFullYear(),month:g.getMonth()+1,day:g.getDate()})},
+ h:{n:HM,start:hstart,days:(y,m)=>Math.round((hstart(m<12?y:y+1,m<12?m+1:1)-hstart(y,m))/864e5),of:H}
+};
+function lab(k,g){if(k=="s"){const p=P(g);return fa(p.day)+" "+AM[p.month-1]+" "+fa(p.year)}
+ if(k=="g")return fa(g.getDate())+" "+GM[g.getMonth()]+" "+fa(g.getFullYear());
+ const h=H(g);return fa(h.day)+" "+HM[h.month-1]+" "+fa(h.year)}
+function others(g){return ["s","g","h"].filter(k=>k!=st.cm&&st["s"+k]).map(k=>lab(k,g)).join(" · ")}
+function syncS(){const o=CS[st.cm].of(S.sel);S.y=o.year;S.m=o.month}
+function dayCard(){const g=S.sel,l=evFor(g),o=others(g);
+ return `<div class="card"><h3>${WD[(g.getDay()+1)%7]} · ${lab(st.cm,g)}</h3>${o?`<div class="sub">${o}</div>`:""}
  ${l.length?l.map(e=>`<div class="ev"><span class="dot k${e.k}"></span><div>${e.n}<div class="sub">${e.t} — ${e.d}</div></div></div>`).join(""):`<div class="sub" style="padding-top:8px">بو گون اوچون اولای یوخدور</div>`}</div>`}
-function cal(){const n=mdays(S.y,S.m),s=mstart(S.y,S.m),off=(s.getDay()+1)%7;
- let h=`<div class="mh"><button id="nx">‹</button><button class="t" id="pk">${AM[S.m-1]} ${fa(S.y)}</button><button id="pv">›</button></div><div class="g">`;
+function cal(){const c=CS[st.cm],n=c.days(S.y,S.m),s=c.start(S.y,S.m),off=(s.getDay()+1)%7;
+ let h=`<div class="mh"><button id="nx">‹</button><button class="t" id="pk">${c.n[S.m-1]} ${fa(S.y)}</button><button id="pv">›</button></div><div class="g">`;
  WD.forEach(w=>h+=`<div class="w">${w}</div>`);
  for(let i=0;i<off;i++)h+=`<div class="d e"></div>`;
  for(let i=1;i<=n;i++){const g=add(s,i-1);h+=`<button class="d${same(g,t0)?" td":""}${same(g,S.sel)?" sel":""}" data-i="${i-1}">${fa(i)}${dots(evFor(g))}</button>`}
@@ -123,20 +136,21 @@ function cal(){const n=mdays(S.y,S.m),s=mstart(S.y,S.m),off=(s.getDay()+1)%7;
  $("#nx").onclick=()=>step(1);$("#pv").onclick=()=>step(-1);$("#pk").onclick=picker;
  document.querySelectorAll(".d[data-i]").forEach(b=>b.onclick=()=>{S.sel=add(s,+b.dataset.i);cal()})}
 function step(d){S.m+=d;if(S.m>12){S.m=1;S.y++}if(S.m<1){S.m=12;S.y--}cal()}
-function picker(){const o=document.createElement("div");o.className="ov";
- o.innerHTML=`<div class="sh"><div class="mh"><button id="y1">‹</button><b>${fa(S.y)}</b><button id="y2">›</button></div><div class="pk">${AM.map((a,i)=>`<button data-m="${i+1}" class="${i+1==S.m?"on":""}">${a}</button>`).join("")}</div></div>`;
+function picker(){const c=CS[st.cm],o=document.createElement("div");o.className="ov";
+ o.innerHTML=`<div class="sh"><div class="mh"><button id="y1">‹</button><b>${fa(S.y)}</b><button id="y2">›</button></div><div class="pk">${c.n.map((a,i)=>`<button data-m="${i+1}" class="${i+1==S.m?"on":""}">${a}</button>`).join("")}</div></div>`;
  document.body.appendChild(o);
  o.onclick=e=>{if(e.target==o)o.remove()};
  o.querySelector("#y1").onclick=()=>{S.y++;o.remove();picker()};
  o.querySelector("#y2").onclick=()=>{S.y--;o.remove();picker()};
  o.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{S.m=+b.dataset.m;o.remove();cal()})}
+const applyFs=()=>{$("#m").style.zoom=st.fs};
 function evs(){const q=S.q.trim();let up=[];
  for(let i=0;i<380;i++){const g=add(t0,i);evFor(g).forEach(e=>up.push({g,e}))}
  up=up.filter(x=>(!S.f||x.e.k==S.f)&&(!q||x.e.n.includes(q)));
  const pend=EV.filter(e=>!e.r&&!st.cu[e.id]&&(!S.f||e.k==S.f)&&(!q||e.n.includes(q)));
  const ch=[[0,"همه"],[1,"تاریخی"],[2,"فرهنگی"],[3,"دینی"]].map(c=>`<button data-f="${c[0]}" class="${S.f==c[0]?"on":""}">${c[1]}</button>`).join("");
  let h=`<input id="q" placeholder="آختار" value="${S.q}"><div class="chips">${ch}</div>`;
- h+=up.map(x=>{const p=P(x.g);return `<div class="card ev" style="margin-top:8px"><span class="dot k${x.e.k}"></span><div>${x.e.n}<div class="sub">${x.e.t} — ${x.e.d}</div><div class="sub">${fa(p.day)} ${AM[p.month-1]} ${fa(p.year)}</div></div></div>`}).join("")||`<div class="sub">اولای تاپیلمادی</div>`;
+ h+=up.map(x=>{const p=P(x.g);return `<div class="card ev" style="margin-top:8px"><span class="dot k${x.e.k}"></span><div>${x.e.n}<div class="sub">${x.e.t} — ${x.e.d}</div><div class="sub">${lab(st.cm,x.g)}</div></div></div>`}).join("")||`<div class="sub">اولای تاپیلمادی</div>`;
  if(pend.length)h+=`<h2>تاریخ تعیین اولوناجاق</h2>`+pend.map(e=>`<div class="card ev" style="margin-top:8px"><span class="dot k${e.k}"></span><div>${e.n}<div class="sub">${e.t} — ${e.d}</div></div><button data-p="${e.id}">تاریخ تعیین ائت</button></div>`).join("");
  $("#m").innerHTML=h;
  $("#q").oninput=e=>{S.q=e.target.value;evs();const i=$("#q");i.focus();i.setSelectionRange(i.value.length,i.value.length)};
@@ -147,13 +161,13 @@ function setDate(id){const v=prompt("ay و گون (مثال: 5 12) — شمسی 
  st.cu[id]=a;save();evs()}
 function sets(){$("#m").innerHTML=`<div class="card"><h3>هجری تاریخ دوزلتمه‌سی</h3><div class="sub" style="margin-bottom:8px">دینی گونلر اؤلکه‌یه گؤره 1 گون فرقلی اولا بیلر</div>
  <select id="of">${[-2,-1,0,1,2].map(v=>`<option value="${v}" ${v==st.off?"selected":""}>${v>0?"+":""}${fa(v)}</option>`).join("")}</select></div>
- <div class="card"><h3>گؤستریلن تاریخلر</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="sg" style="width:auto" ${st.sg?"checked":""}> میلادی</label><label style="display:block;padding:6px 0"><input type="checkbox" id="sh" style="width:auto" ${st.sh?"checked":""}> قمری</label></div><div class="card"><h3>گئجه مودی</h3><select id="th"><option value="auto">اوتوماتیک</option><option value="light">ایشیقلی</option><option value="dark">قارانلیق</option></select></div><div class="card"><h3>گونلوک بیلدیریش</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="nt" style="width:auto"> هر گون بیلدیریش</label><input type="time" id="nh"><div class="sub" id="ns" style="margin-top:6px"></div></div><div class="card"><button id="rs">اؤزل تاریخلری سیل</button></div>`;
- $("#th").value=st.th;$("#nt").checked=!!st.nt;$("#nh").value=st.nh;$("#th").onchange=e=>{st.th=e.target.value;save();applyTheme()};$("#nt").onchange=e=>{st.nt=e.target.checked?1:0;save();notif(true)};$("#nh").onchange=e=>{st.nh=e.target.value||"08:00";save();notif(false)};if(!window.Native)$("#ns").textContent="بیلدیریش یالنیز اپلیکاسیادا ایشلیر";
- $("#of").onchange=e=>{st.off=+e.target.value;save()};$("#sg").onchange=e=>{st.sg=e.target.checked?1:0;save()};$("#sh").onchange=e=>{st.sh=e.target.checked?1:0;save()};
+ <div class="card"><h3>اصلی تقویم</h3><select id="cm"><option value="s">شمسی</option><option value="g">میلادی</option><option value="h">قمری</option></select></div><div class="card"><h3>یازی اؤلچوسو</h3><div style="display:flex;gap:8px;align-items:center"><button id="fm">A−</button><div class="sub" id="fv" style="flex:1;text-align:center"></div><button id="fp">A+</button></div></div><div class="card"><h3>گؤستریلن تاریخلر</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="ss" style="width:auto" ${st.ss?"checked":""}> شمسی</label><label style="display:block;padding:6px 0"><input type="checkbox" id="sg" style="width:auto" ${st.sg?"checked":""}> میلادی</label><label style="display:block;padding:6px 0"><input type="checkbox" id="sh" style="width:auto" ${st.sh?"checked":""}> قمری</label></div><div class="card"><h3>گئجه مودی</h3><select id="th"><option value="auto">اوتوماتیک</option><option value="light">ایشیقلی</option><option value="dark">قارانلیق</option></select></div><div class="card"><h3>گونلوک بیلدیریش</h3><label style="display:block;padding:6px 0"><input type="checkbox" id="nt" style="width:auto"> هر گون بیلدیریش</label><input type="time" id="nh"><div class="sub" id="ns" style="margin-top:6px"></div></div><div class="card"><button id="rs">اؤزل تاریخلری سیل</button></div>`;
+ $("#cm").value=st.cm;$("#cm").onchange=e=>{st.cm=e.target.value;save();syncS();notif(false)};$("#ss").onchange=e=>{st.ss=e.target.checked?1:0;save();notif(false)};const fv=()=>{$("#fv").textContent=fa(Math.round(st.fs*100))+"%"};fv();$("#fm").onclick=()=>{st.fs=Math.max(0.8,Math.round((st.fs-0.1)*10)/10);save();applyFs();fv()};$("#fp").onclick=()=>{st.fs=Math.min(1.6,Math.round((st.fs+0.1)*10)/10);save();applyFs();fv()};$("#th").value=st.th;$("#nt").checked=!!st.nt;$("#nh").value=st.nh;$("#th").onchange=e=>{st.th=e.target.value;save();applyTheme()};$("#nt").onchange=e=>{st.nt=e.target.checked?1:0;save();notif(true)};$("#nh").onchange=e=>{st.nh=e.target.value||"08:00";save();notif(false)};if(!window.Native)$("#ns").textContent="بیلدیریش یالنیز اپلیکاسیادا ایشلیر";
+ $("#of").onchange=e=>{st.off=+e.target.value;save()};$("#sg").onchange=e=>{st.sg=e.target.checked?1:0;save();notif(false)};$("#sh").onchange=e=>{st.sh=e.target.checked?1:0;save();notif(false)};
  $("#rs").onclick=()=>{st.cu={};save();alert("سیلیندی")}}
 function go(t){S.tab=t;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));({cal,ev:evs,set:sets})[t]()}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
-$("#today").onclick=()=>{S.y=tp.year;S.m=tp.month;S.sel=t0;go("cal")};
+$("#today").onclick=()=>{S.sel=t0;syncS();go("cal")};
 function equinox(year){
  const Y=(year-2000)/1000,r=Math.PI/180;
  const J0=2451623.80984+365242.37404*Y+0.05169*Y*Y-0.00411*Y*Y*Y-0.00057*Y*Y*Y*Y;
@@ -176,13 +190,12 @@ function notif(ask){const N=window.Native,ns=$("#ns");
  const hm=(st.nh||"08:00").split(":").map(Number),out=[];
  for(let i=0;i<45;i++){const g=add(t0,i);const at=new Date(g.getFullYear(),g.getMonth(),g.getDate(),hm[0],hm[1],0).getTime();if(at<=Date.now())continue;
   const p=P(g),l=evFor(g);
-  const h=H(g),gs=g.toLocaleDateString("az",{day:"numeric",month:"long",year:"numeric"});
-  const dl=[st.sg?gs:"",st.sh?fa(h.day)+" "+HM[h.month-1]+" "+fa(h.year):""].filter(Boolean).join(" · ");
-  out.push({at:at,t:WD[(g.getDay()+1)%7]+" · "+AM[p.month-1]+" "+fa(p.day)+" "+fa(p.year),x:[dl].concat(l.map(e=>e.n+" — "+e.d)).filter(Boolean).join("\n")})}
+  const dl=others(g);
+  out.push({at:at,t:WD[(g.getDay()+1)%7]+" · "+lab(st.cm,g),x:[dl].concat(l.map(e=>e.n+" — "+e.d)).filter(Boolean).join("\n")})}
  N.schedule(JSON.stringify(out))}
 let sx=null;
 $("#m").addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 $("#m").addEventListener("touchend",e=>{if(sx===null||S.tab!="cal")return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>60)step(dx<0?1:-1)});
-cal();
+syncS();applyFs();cal();
 if(st.nt)notif(false);
 </script></body></html>
