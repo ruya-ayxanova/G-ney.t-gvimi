@@ -46,7 +46,7 @@ h2{font-size:15px;color:var(--mu);margin:16px 0 4px}
 </style></head><body>
 <header><h1>تورک تقویمی</h1><button id="today">بوگون</button></header>
 <main id="m"></main>
-<nav><button data-t="cal" class="on">تقویم</button><button data-t="ev">اولایلار</button><button data-t="set">تنظیمات</button></nav>
+<nav><button data-t="cal" class="on">تقویم</button><button data-t="ev">اولایلار</button><button data-t="set">آیارلار</button></nav>
 <script>
 const AM=["آغلار گولر","گولن آی","قیزاران آی","قورا بیشیرن","قویروق دوغان","زومار آیی","خەزەل آیی","قیروو آیی","آذر","چیله","دوندران آی","بایرام آیی"];
 const HM=["محرم","صفر","ربیع‌الاول","ربیع‌الثانی","جمادی‌الاول","جمادی‌الثانی","رجب","شعبان","رمضان","شوال","ذیقعده","ذیحجه"];
@@ -176,7 +176,9 @@ function notif(ask){const N=window.Native,ns=$("#ns");
  const hm=(st.nh||"08:00").split(":").map(Number),out=[];
  for(let i=0;i<45;i++){const g=add(t0,i);const at=new Date(g.getFullYear(),g.getMonth(),g.getDate(),hm[0],hm[1],0).getTime();if(at<=Date.now())continue;
   const p=P(g),l=evFor(g);
-  out.push({at:at,t:WD[(g.getDay()+1)%7]+" · "+AM[p.month-1]+" "+fa(p.day),x:l.length?l.map(e=>e.n+" — "+e.d).join("\n"):g.toLocaleDateString("az",{day:"numeric",month:"long",year:"numeric"})})}
+  const h=H(g),gs=g.toLocaleDateString("az",{day:"numeric",month:"long",year:"numeric"});
+  const dl=[st.sg?gs:"",st.sh?fa(h.day)+" "+HM[h.month-1]+" "+fa(h.year):""].filter(Boolean).join(" · ");
+  out.push({at:at,t:WD[(g.getDay()+1)%7]+" · "+AM[p.month-1]+" "+fa(p.day)+" "+fa(p.year),x:[dl].concat(l.map(e=>e.n+" — "+e.d)).filter(Boolean).join("\n")})}
  N.schedule(JSON.stringify(out))}
 let sx=null;
 $("#m").addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
